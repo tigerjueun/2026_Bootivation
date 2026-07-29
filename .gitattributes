@@ -1,0 +1,10 @@
+
+* text=auto
+*.ino text eol=lf
+*.c text eol=lf
+*.h text eol=lf
+*.py text eol=lf
+*.ps1 text eol=crlf
+*.wav binary
+*.aia binary
+*.hex text eol=lf

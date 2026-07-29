@@ -1,0 +1,5 @@
+#include "fnd.h"
+#include <avr/io.h>
+#include <avr/pgmspace.h>
+static const uint8_t table[]PROGMEM={0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x6F,0x77,0x7C,0x58,0x5E,0x79,0x71,0x40,0x00,0x5C,0x54};static volatile uint8_t digits[4]={0};static uint8_t scan=0;static uint8_t seg(uint8_t v){if(v>=sizeof(table))v=FND_CHAR_BLANK;return pgm_read_byte(&table[v]);}
+void fnd_init(void){DDRC=0xFFU;DDRG=(DDRG&0xF0U)|0x0FU;PORTC=0;PORTG&=0xF0U;}void fnd_off(void){PORTG&=0xF0U;PORTC=0;}void fnd_refresh_step(void){uint8_t s=0x08U>>scan;PORTG&=0xF0U;PORTC=seg(digits[scan]);PORTG=(PORTG&0xF0U)|s;scan=(scan+1U)%4U;}void fnd_set_digits(uint8_t a,uint8_t b,uint8_t c,uint8_t d){digits[0]=a;digits[1]=b;digits[2]=c;digits[3]=d;}void fnd_set_zero(void){fnd_set_digits(0,0,0,0);}void fnd_set_item_count(fnd_char_t item,uint8_t count){fnd_set_digits((uint8_t)item,count/100U,(count/10U)%10U,count%10U);}void fnd_set_total(uint16_t total){if(total>9999U)total=9999U;fnd_set_digits(total/1000U,(total/100U)%10U,(total/10U)%10U,total%10U);}void fnd_set_done(void){fnd_set_digits(FND_CHAR_D,FND_CHAR_O,FND_CHAR_N,FND_CHAR_E);}

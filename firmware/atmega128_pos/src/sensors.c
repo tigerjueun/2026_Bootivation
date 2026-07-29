@@ -1,0 +1,5 @@
+#include "sensors.h"
+#include "config.h"
+#include "app_time.h"
+#include <avr/io.h>
+static uint8_t confirm(uint8_t bit){if((PINE&_BV(bit))==0U)return 0U;app_delay_ms(20);return(PINE&_BV(bit))!=0U;}static void release(uint8_t bit){while(PINE&_BV(bit))app_delay_ms(1);app_delay_ms(20);}void sensors_init(void){DDRE&=0x0FU;PORTE&=0x0FU;DDRD&=~_BV(PD5);PORTD&=~_BV(PD5);DDRA=0xFFU;PORTA=0;}uint8_t ir_product_detected(void){return(PIND&_BV(PD5))==0U;}uint8_t touch_a_pressed(void){return confirm(TOUCH_A_BIT);}uint8_t touch_b_pressed(void){return confirm(TOUCH_B_BIT);}uint8_t touch_c_pressed(void){return confirm(TOUCH_C_BIT);}uint8_t touch_done_pressed(void){return confirm(TOUCH_DONE_BIT);}void wait_touch_a_release(void){release(TOUCH_A_BIT);}void wait_touch_b_release(void){release(TOUCH_B_BIT);}void wait_touch_c_release(void){release(TOUCH_C_BIT);}void wait_touch_done_release(void){release(TOUCH_DONE_BIT);}void led_set(uint8_t on){PORTA=on?0xFFU:0U;}void led_blink_done(void){for(uint8_t i=0;i<6;i++){led_set(1);app_delay_ms(150);led_set(0);app_delay_ms(150);}}

@@ -1,0 +1,8 @@
+{
+  "SYSTEM_READY": "system_ready.wav",
+  "PLACE_BEFORE": "place_before.wav",
+  "SCAN_PRODUCT": "scan_product.wav",
+  "SCAN_COMPLETED": "scan_completed.wav",
+  "TRAY_MISMATCH": "tray_mismatch.wav",
+  "SYSTEM_RESET": "system_reset.wav"
+}

@@ -1,0 +1,5 @@
+#include "joystick.h"
+#include "config.h"
+#include "app_time.h"
+#include <avr/io.h>
+void joystick_init(void){DDRF&=~_BV(PF1);PORTF&=~_BV(PF1);DDRD&=~_BV(PD4);PORTD|=_BV(PD4);ADMUX=_BV(REFS0)|JOY_ADC_CHANNEL;ADCSRA=_BV(ADEN)|_BV(ADPS2)|_BV(ADPS1)|_BV(ADPS0);(void)joystick_read_adc();}uint16_t joystick_read_adc(void){ADMUX=_BV(REFS0)|JOY_ADC_CHANNEL;ADCSRA|=_BV(ADSC);while(ADCSRA&_BV(ADSC)){}uint8_t l=ADCL,h=ADCH;return((uint16_t)h<<8)|l;}joystick_event_t joystick_get_direction(void){uint16_t a=joystick_read_adc();return a<JOY_LEFT_LIMIT?JOY_LEFT:(a>=JOY_RIGHT_LIMIT?JOY_RIGHT:JOY_CENTER);}uint8_t joystick_is_pressed(void){return(PIND&_BV(PD4))==0U;}joystick_event_t joystick_get_stable_event(void){joystick_event_t a=joystick_is_pressed()?JOY_PRESSED:joystick_get_direction();if(a==JOY_CENTER)return a;app_delay_ms(30);joystick_event_t b=joystick_is_pressed()?JOY_PRESSED:joystick_get_direction();return a==b?a:JOY_CENTER;}void joystick_wait_center(void){while(joystick_get_direction()!=JOY_CENTER)app_delay_ms(1);app_delay_ms(20);}void joystick_wait_button_release(void){while(joystick_is_pressed())app_delay_ms(1);app_delay_ms(20);}
