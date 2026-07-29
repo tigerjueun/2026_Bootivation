@@ -1,0 +1,13 @@
+{
+  "before": {
+    "A": {"lower":[5,100,70],"upper":[25,255,255]},
+    "B": {"lower":[35,70,60],"upper":[85,255,255]},
+    "C": {"lower":[90,70,60],"upper":[130,255,255]}
+  },
+  "after": {
+    "A": {"lower":[5,100,70],"upper":[25,255,255]},
+    "B": {"lower":[35,70,60],"upper":[85,255,255]},
+    "C": {"lower":[90,70,60],"upper":[130,255,255]}
+  },
+  "classification": {"minimum_fill_ratio":{"A":0.16,"B":0.16,"C":0.16},"stable_frames":7,"morph_kernel":5}
+}

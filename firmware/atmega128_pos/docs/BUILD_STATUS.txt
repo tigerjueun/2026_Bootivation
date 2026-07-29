@@ -1,0 +1,1 @@
+C sources and host syntax checks are included. Generate firmware/MicroProject_C.hex with AVR-GCC using build_hex.bat. The archived ASM HEX is preserved separately; no AVR-linked C HEX is fabricated by this archive.

@@ -1,0 +1,26 @@
+Fusion tests
+============
+test_exact_payment_clears_customer (test_ops_dashboard.OpsDashboardTests.test_exact_payment_clears_customer) ... ok
+test_no_payment_is_critical (test_ops_dashboard.OpsDashboardTests.test_no_payment_is_critical) ... ok
+test_partial_payment_calculates_difference (test_ops_dashboard.OpsDashboardTests.test_partial_payment_calculates_difference) ... ok
+test_rider_progress (test_ops_dashboard.OpsDashboardTests.test_rider_progress) ... ok
+test_tray_mismatch_alert (test_ops_dashboard.OpsDashboardTests.test_tray_mismatch_alert) ... ok
+test_customer_summary_not_double_counted (test_rider_three_way.RiderThreeWayVerificationTests.test_customer_summary_not_double_counted) ... ok
+test_final_green_requires_order_vision_and_pos_match (test_rider_three_way.RiderThreeWayVerificationTests.test_final_green_requires_order_vision_and_pos_match) ... ok
+test_inventory_ledger_updates_on_physical_removal (test_rider_three_way.RiderThreeWayVerificationTests.test_inventory_ledger_updates_on_physical_removal) ... ok
+test_legacy_customer_protocol_remains_supported (test_rider_three_way.RiderThreeWayVerificationTests.test_legacy_customer_protocol_remains_supported) ... ok
+test_pos_reset_rolls_back_check_but_keeps_physical_removal (test_rider_three_way.RiderThreeWayVerificationTests.test_pos_reset_rolls_back_check_but_keeps_physical_removal) ... ok
+test_vision_collection_advances_but_waits_for_pos (test_rider_three_way.RiderThreeWayVerificationTests.test_vision_collection_advances_but_waits_for_pos) ... ok
+test_wrong_physical_item_turns_red (test_rider_three_way.RiderThreeWayVerificationTests.test_wrong_physical_item_turns_red) ... ok
+test_wrong_pos_check_turns_red (test_rider_three_way.RiderThreeWayVerificationTests.test_wrong_pos_check_turns_red) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.003s
+
+OK
+
+
+ATmega host syntax check
+========================
+Host syntax check passed. This is not an AVR link/build.
+

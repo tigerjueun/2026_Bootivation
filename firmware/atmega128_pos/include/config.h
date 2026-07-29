@@ -1,0 +1,17 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+#ifndef F_CPU
+#define F_CPU 16000000UL
+#endif
+#define UART_BAUD 57600UL
+#define JOY_ADC_CHANNEL 1U
+#define JOY_LEFT_LIMIT 300U
+#define JOY_RIGHT_LIMIT 700U
+#define ULTRA_NEAR_TICKS 1800U
+#define ULTRA_TIMEOUT_TICKS 60000U
+#define IR_ACTIVE_LOW 1
+#define TOUCH_A_BIT PE4
+#define TOUCH_B_BIT PE5
+#define TOUCH_C_BIT PE6
+#define TOUCH_DONE_BIT PE7
+#endif
