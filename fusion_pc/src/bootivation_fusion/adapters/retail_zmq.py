@@ -157,8 +157,15 @@ class RetailCustomerSubscriber(threading.Thread):
                     f"[vision] PICK delta customer={customer_id} "
                     f"product={product} +{delta}"
                 )
-                for _ in range(delta):
-                    self._emit_event(f"REMOVE_CANDIDATE:{product}")
+                # Emit one quantity-bearing event. Multiple immediate events of
+                # the same product would be collapsed by StateManager's
+                # cooldown intended for duplicate camera detections.
+                self._emit_event(json.dumps({
+                    "event": "REMOVE_CANDIDATE",
+                    "product": product,
+                    "qty": delta,
+                    "customer_id": customer_id,
+                }))
             elif delta < 0:
                 # The final Vision protocol has no RETURN event. Count decreases
                 # are logged but never converted into negative inventory changes.
