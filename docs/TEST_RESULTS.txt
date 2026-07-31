@@ -1,10 +1,27 @@
-Fusion tests
-============
+Bootivation archive validation
+==============================
+
+Command
+-------
+cd fusion_pc
+python3 -m py_compile \
+  main.py \
+  src/bootivation_fusion/adapters/retail_zmq.py \
+  src/bootivation_fusion/adapters/vision_emergency.py \
+  tools/send_vision_emergency.py
+
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+
+Result
+------
 test_exact_payment_clears_customer (test_ops_dashboard.OpsDashboardTests.test_exact_payment_clears_customer) ... ok
 test_no_payment_is_critical (test_ops_dashboard.OpsDashboardTests.test_no_payment_is_critical) ... ok
 test_partial_payment_calculates_difference (test_ops_dashboard.OpsDashboardTests.test_partial_payment_calculates_difference) ... ok
 test_rider_progress (test_ops_dashboard.OpsDashboardTests.test_rider_progress) ... ok
 test_tray_mismatch_alert (test_ops_dashboard.OpsDashboardTests.test_tray_mismatch_alert) ... ok
+test_exit (test_retail_zmq.T.test_exit) ... ok
+test_pos (test_retail_zmq.T.test_pos) ... ok
+test_wrong_topic (test_retail_zmq.T.test_wrong_topic) ... ok
 test_customer_summary_not_double_counted (test_rider_three_way.RiderThreeWayVerificationTests.test_customer_summary_not_double_counted) ... ok
 test_final_green_requires_order_vision_and_pos_match (test_rider_three_way.RiderThreeWayVerificationTests.test_final_green_requires_order_vision_and_pos_match) ... ok
 test_inventory_ledger_updates_on_physical_removal (test_rider_three_way.RiderThreeWayVerificationTests.test_inventory_ledger_updates_on_physical_removal) ... ok
@@ -15,12 +32,18 @@ test_wrong_physical_item_turns_red (test_rider_three_way.RiderThreeWayVerificati
 test_wrong_pos_check_turns_red (test_rider_three_way.RiderThreeWayVerificationTests.test_wrong_pos_check_turns_red) ... ok
 
 ----------------------------------------------------------------------
-Ran 13 tests in 0.003s
+Ran 16 tests in 0.004s
 
 OK
 
+Python syntax
+-------------
+main.py and the final retail/emergency adapters compiled successfully.
 
 ATmega host syntax check
-========================
-Host syntax check passed. This is not an AVR link/build.
+------------------------
+Host syntax check passed. This is not an AVR link/build. The final C HEX must be generated with an AVR-GCC toolchain and verified on the ATmega128 board.
 
+Scope note
+----------
+These results validate pure Python/state/parser logic and host-side C syntax. They do not replace end-to-end hardware, camera, Bluetooth, ROS 2 or network validation.
