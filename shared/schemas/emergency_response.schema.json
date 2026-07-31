@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tigerjueun/2026_Bootivation/shared/schemas/emergency_response.schema.json",
+  "title": "Bootivation Vision emergency response",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["ok", "customer_id", "snapshot_available"],
+      "properties": {
+        "ok": {"const": true},
+        "customer_id": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "snapshot_available": {
+          "type": "boolean"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["ok", "error"],
+      "properties": {
+        "ok": {"const": false},
+        "error": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  ]
+}

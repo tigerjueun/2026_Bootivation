@@ -1,1 +1,35 @@
-{"pos":{"enabled":true,"port":"COM5","baud":57600,"timeout_sec":0.2},"rider":{"enabled":true,"transport":"usb_serial","port":"COM10","baud":9600,"timeout_sec":0.2,"pick_source":"vision"},"vision":{"enabled":false,"subscriber_endpoint":"tcp://VISION_PC_IP:5555","topic":"retail"},"inventory":{"max_stock":{"A":5,"B":5,"C":5}},"remove_validation":{"cooldown_sec":1.2},"logging":{"event_log":"logs/events.jsonl"}}
+{
+  "pos": {
+    "enabled": true,
+    "port": "COM5",
+    "baud": 57600,
+    "timeout_sec": 0.2
+  },
+  "rider": {
+    "enabled": true,
+    "transport": "usb_serial",
+    "port": "COM10",
+    "baud": 9600,
+    "timeout_sec": 0.2,
+    "pick_source": "vision"
+  },
+  "vision": {
+    "enabled": false,
+    "subscriber_endpoint": "tcp://VISION_PC_IP:5555",
+    "emergency_endpoint": "tcp://VISION_PC_IP:5556",
+    "topic": "retail"
+  },
+  "inventory": {
+    "max_stock": {
+      "A": 5,
+      "B": 5,
+      "C": 5
+    }
+  },
+  "remove_validation": {
+    "cooldown_sec": 1.2
+  },
+  "logging": {
+    "event_log": "logs/events.jsonl"
+  }
+}

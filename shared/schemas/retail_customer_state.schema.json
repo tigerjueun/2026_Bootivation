@@ -1,1 +1,83 @@
-{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"Retail customer state","type":"object","required":["timestamp","customer_id","active","visit_state","zone_A_picks","zone_B_picks","zone_C_picks","at_kiosk"],"properties":{"timestamp":{"type":"number"},"customer_id":{"type":"integer"},"active":{"type":"boolean"},"visit_state":{"type":"string"},"zone_A_picks":{"type":"integer","minimum":0},"zone_B_picks":{"type":"integer","minimum":0},"zone_C_picks":{"type":"integer","minimum":0},"at_kiosk":{"type":"boolean"},"event":{}}}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tigerjueun/2026_Bootivation/shared/schemas/retail_customer_state.schema.json",
+  "title": "Bootivation retail customer state",
+  "description": "JSON body carried after the `retail ` topic prefix on ZMQ PUB/SUB port 5555.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "timestamp",
+    "customer_id",
+    "state",
+    "active",
+    "visit_state",
+    "zone_A_picks",
+    "zone_B_picks",
+    "zone_C_picks",
+    "at_kiosk"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "number"
+    },
+    "customer_id": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "state": {
+      "type": "string",
+      "enum": ["POS", "EXIT"]
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "visit_state": {
+      "type": "string",
+      "minLength": 1
+    },
+    "zone_A_picks": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "zone_B_picks": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "zone_C_picks": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "at_kiosk": {
+      "type": "boolean"
+    },
+    "event": {
+      "type": ["string", "null"]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {"const": "EXIT"}
+        }
+      },
+      "then": {
+        "properties": {
+          "active": {"const": false}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {"const": "POS"}
+        }
+      },
+      "then": {
+        "properties": {
+          "at_kiosk": {"const": true}
+        }
+      }
+    }
+  ]
+}
