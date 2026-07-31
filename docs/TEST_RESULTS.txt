@@ -1,8 +1,8 @@
 Bootivation archive validation
 ==============================
 
-Command
--------
+Commands
+--------
 cd fusion_pc
 python3 -m py_compile \
   main.py \
@@ -12,33 +12,40 @@ python3 -m py_compile \
 
 python3 -m unittest discover -s tests -p 'test_*.py' -v
 
+Coverage summary
+----------------
+- Operations/customer payment classification: 5 tests
+- Final Vision `retail {JSON}` POS/EXIT adapter: 6 tests
+- Rider order/Vision/POS three-way verification: 8 tests
+- Total: 19 tests
+
+Key validated behaviors
+-----------------------
+- Exact customer payment clears without a theft alert.
+- No payment and partial payment produce critical classifications.
+- Rider progress and tray mismatch calculations remain stable.
+- Final Vision POS and EXIT messages require the `state` field and `retail ` prefix.
+- Non-final Vision states are rejected by the external adapter.
+- A cumulative Vision delta such as `A: 0 → 2` becomes one `REMOVE_CANDIDATE` event with `qty=2`, avoiding loss through duplicate-detection cooldown.
+- Customer POS detailed summary does not double-count `PAY_DONE`.
+- Vision physical removal and Rider POS verification remain separate ledgers.
+- GREEN requires `order == rider_removed == rider_checked_items`.
+- Wrong physical or POS-confirmed items result in RED.
+- POS session reset rolls back the check ledger without restoring already removed physical inventory.
+- Legacy customer POS strings remain parseable.
+
 Result
 ------
-test_exact_payment_clears_customer (test_ops_dashboard.OpsDashboardTests.test_exact_payment_clears_customer) ... ok
-test_no_payment_is_critical (test_ops_dashboard.OpsDashboardTests.test_no_payment_is_critical) ... ok
-test_partial_payment_calculates_difference (test_ops_dashboard.OpsDashboardTests.test_partial_payment_calculates_difference) ... ok
-test_rider_progress (test_ops_dashboard.OpsDashboardTests.test_rider_progress) ... ok
-test_tray_mismatch_alert (test_ops_dashboard.OpsDashboardTests.test_tray_mismatch_alert) ... ok
-test_exit (test_retail_zmq.T.test_exit) ... ok
-test_pos (test_retail_zmq.T.test_pos) ... ok
-test_wrong_topic (test_retail_zmq.T.test_wrong_topic) ... ok
-test_customer_summary_not_double_counted (test_rider_three_way.RiderThreeWayVerificationTests.test_customer_summary_not_double_counted) ... ok
-test_final_green_requires_order_vision_and_pos_match (test_rider_three_way.RiderThreeWayVerificationTests.test_final_green_requires_order_vision_and_pos_match) ... ok
-test_inventory_ledger_updates_on_physical_removal (test_rider_three_way.RiderThreeWayVerificationTests.test_inventory_ledger_updates_on_physical_removal) ... ok
-test_legacy_customer_protocol_remains_supported (test_rider_three_way.RiderThreeWayVerificationTests.test_legacy_customer_protocol_remains_supported) ... ok
-test_pos_reset_rolls_back_check_but_keeps_physical_removal (test_rider_three_way.RiderThreeWayVerificationTests.test_pos_reset_rolls_back_check_but_keeps_physical_removal) ... ok
-test_vision_collection_advances_but_waits_for_pos (test_rider_three_way.RiderThreeWayVerificationTests.test_vision_collection_advances_but_waits_for_pos) ... ok
-test_wrong_physical_item_turns_red (test_rider_three_way.RiderThreeWayVerificationTests.test_wrong_physical_item_turns_red) ... ok
-test_wrong_pos_check_turns_red (test_rider_three_way.RiderThreeWayVerificationTests.test_wrong_pos_check_turns_red) ... ok
 
-----------------------------------------------------------------------
-Ran 16 tests in 0.004s
+```text
+Ran 19 tests
 
 OK
+```
 
 Python syntax
 -------------
-main.py and the final retail/emergency adapters compiled successfully.
+`main.py`, the final retail adapter, the Vision Emergency adapter and the Emergency CLI compiled successfully with `py_compile`.
 
 ATmega host syntax check
 ------------------------
