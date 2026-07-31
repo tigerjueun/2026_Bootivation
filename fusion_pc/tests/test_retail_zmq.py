@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import queue
 import sys
+import threading
 import unittest
 from pathlib import Path
 
@@ -75,6 +77,29 @@ class RetailCustomerSubscriberTests(unittest.TestCase):
                 self.make_message(state="INSIDE"),
                 expected_topic="retail",
             )
+
+    def test_pick_delta_preserves_quantity(self) -> None:
+        events = queue.Queue()
+        subscriber = RetailCustomerSubscriber(
+            endpoint="inproc://unused-retail-test",
+            event_queue=events,
+            session_queue=queue.Queue(),
+            stop_event=threading.Event(),
+            latest_state={},
+        )
+
+        try:
+            subscriber._emit_pick_deltas(
+                customer_id=100,
+                current_counts={"A": 2, "B": 0, "C": 0},
+            )
+            event = events.get_nowait()
+            self.assertEqual(event.kind, "REMOVE_CANDIDATE")
+            self.assertEqual(event.item, "A")
+            self.assertEqual(event.qty, 2)
+            self.assertTrue(events.empty())
+        finally:
+            subscriber._socket.close(0)
 
 
 if __name__ == "__main__":
