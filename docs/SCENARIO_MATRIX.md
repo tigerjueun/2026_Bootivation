@@ -1,62 +1,127 @@
-# Bootivation 고급 이벤트·행동 시나리오 매트릭스
+# Event and Action Scenario Matrix
 
-## 1. 고객 계산 시나리오
+## 1. Customer payment scenarios
 
-| 상황 | 계산 | 결과 코드 | 자동 행동 | UI |
+At customer EXIT, Fusion compares:
+
+```text
+picked  = final Vision EXIT A/B/C counts
+paid    = customer-associated POS payment
+unpaid  = max(picked - paid, 0)
+overpaid = max(paid - picked, 0)
+```
+
+| Situation | Calculation | Result code | Automatic action | Operator view |
 |---|---|---|---|---|
-| 상품 없이 퇴장 | picked=0 | `NO_ITEMS` | 경보 없음 | 정보 기록 |
-| 픽업=결제 | picked-paid=0 | `CLEARED` | 정상 통과 | 성공 표시 |
-| POS 미경유 + 미결제 | paid=0, picked>0, `was_at_kiosk=false` | `BYPASS_POS_NO_PAYMENT` | RPi 경고음 + Rider RED | 긴급 경보/점멸 |
-| POS 경유했으나 결제 없음 | paid=0, picked>0 | `NO_PAYMENT` | RPi 경고음 + Rider RED | 긴급 경보 |
-| 일부만 결제 | `unpaid=max(picked-paid,0)` > 0 | `PARTIAL_PAYMENT` | 미결제 품목별 경고 | A/B/C 차이 표시 |
-| 픽업보다 결제량이 많음 | `overpaid=max(paid-picked,0)` > 0 | `OVERPAYMENT` | 차단하지 않음 | 경고 표시 |
-| 추적 취소, 픽업 없음 | picked=0 | `NO_ITEMS` | 무시 | 타임라인만 기록 |
+| exits without items | `sum(picked)=0` | `NO_ITEMS` | no alarm | information event |
+| exact payment | `picked=paid` | `CLEARED` | normal completion | success result |
+| bypasses POS with items | `paid=0`, `picked>0`, no POS transition | `BYPASS_POS_NO_PAYMENT` | Rider RED + RPi warning + Vision Emergency 5556 | critical alert and customer ID/image |
+| reaches POS but pays nothing | `paid=0`, `picked>0`, POS seen | `NO_PAYMENT` | Rider RED + RPi warning + Vision Emergency 5556 | critical alert |
+| partial payment | any `unpaid>0`, `sum(paid)>0` | `PARTIAL_PAYMENT` | same critical actions | A/B/C unpaid difference |
+| paid quantity exceeds PICK | any `overpaid>0`, `unpaid=0` | `OVERPAYMENT` | no theft alarm | warning and difference |
+| entry tracking cancelled with no PICK | `picked=0` | `NO_ITEMS` | ignore alarm path | timeline only |
 
-## 2. 배달기사 시나리오
+### Emergency response
 
-| 상황 | 계산 | 자동 행동 | UI |
+```text
+Fusion REQ :5556
+{"Emergency":true,"customer_id":100}
+
+Vision WebUI REP
+{"ok":true,"customer_id":100,"snapshot_available":true}
+```
+
+The WebUI displays a red theft warning and the Camera 1 entry snapshot when available.
+
+---
+
+## 2. Rider scenarios
+
+Three independent ledgers are used:
+
+```text
+order_items
+rider_removed       # Vision physical shelf removal
+rider_checked_items # Rider POS final verification
+```
+
+| Situation | Calculation | Automatic action | Result |
 |---|---|---|---|
-| 주문 등록 | `order_items` 설정 | BLUE + 첫 상품 서보 | 주문 수량/진행률 |
-| 정상 수집 | `collected <= order` | 다음 상품 서보 | A/B/C 수집 수량 |
-| 잘못된/초과 상품 | `max(collected-order,0)>0` | RED | `RIDER_PICK_ERROR` 긴급 경보 |
-| 수집 완료 | `order == collected` | HOME + GREEN | 100%, POS 확인 대기 |
-| POS 확인 부족 | `checked < order` | 기존 StateManager 결과 반영 | 누락 수량 표시 |
-| POS 확인 초과/불일치 | `checked != order` | RED | 긴급 경보 |
-| 최종 일치 | order=collected=checked | GREEN | 완료 이력 |
+| order accepted | set `order_items` | BLUE + first item servo | `RIDER_ORDER_READY` |
+| valid item collected | `removed[item] <= order[item]` | guide next missing item | progress update |
+| unordered/extra item | `removed[item] > order[item]` or order 0 | RED | `WRONG_PICKUP:<item>` |
+| all physical items collected | `order=removed` | BLUE + HOME, ask for Rider POS check | `RIDER_COLLECTED_WAIT_POS` |
+| POS checks too few/many | `checked != order` at DONE | RED | `RIDER_POS_MISMATCH` |
+| physical removal differs | `removed != order` at DONE | RED | `RIDER_REMOVAL_MISMATCH` |
+| final three-way match | `order=removed=checked` | GREEN + HOME | `PICKUP_COMPLETE` |
 
-## 3. 계산 트레이 시나리오
+The POS Rider scan is verification only; it must not decrement inventory a second time.
 
-| 상황 | 계산 | 결과 | 행동 |
-|---|---|---|---|
-| 결제 전 상품 감지 | BEFORE>0 | 스캔 중 | 안내 음성 |
-| 결제 확정 | expected=POS 결제량 | 이동 대기 | 완료 음성/AFTER 이동 |
-| AFTER 정확히 일치 | after=expected, before=0 | `TRAY_COMPLETE` | 정상 완료 |
-| 종류/수량 불일치 | after!=expected, before=0 | `TRAY_MISMATCH` | 경고음 + UI 긴급 경보 |
-| 누락 품목 | `missing=max(expected-after,0)` | 불일치 상세 | A/B/C 누락 표시 |
-| 초과 품목 | `extra=max(after-expected,0)` | 불일치 상세 | A/B/C 초과 표시 |
+---
 
-## 4. 장치 상태 시나리오
+## 3. Checkout tray scenarios
 
-| 장치 | 감시 | 경보 |
+```text
+expected = POS CUSTOMER payment
+before   = stabilized BEFORE tray count
+after    = stabilized AFTER tray count
+missing  = max(expected - after, 0)
+extra    = max(after - expected, 0)
+```
+
+| Situation | Result | Action |
 |---|---|---|
-| Vision | `retail` 메시지 최종 수신 시각 | 4초 이상 중단 시 `DEVICE_STALE:vision` |
-| RPi | `TRAY_COUNT` 최종 수신 시각 | 4초 이상 중단 시 `DEVICE_STALE:rpi` |
-| POS | 직렬 이벤트 수신 및 COM 시작 | 연결 실패/이벤트 상태 표시 |
-| Rider | COM10 open 성공 여부 | 실패 시 `DEVICE_OFFLINE:rider` |
+| products appear on BEFORE | `SCANNING` | `scan_product.wav` |
+| customer POS payment confirmed | `WAIT_TRANSFER` | `scan_completed.wav`, store expected |
+| `before=0` and `after=expected` | `TRAY_COMPLETE` | normal completion |
+| same total but wrong classes | `TRAY_MISMATCH` | warning WAV and dashboard alert |
+| missing item after transfer timeout | `TRAY_MISMATCH` | show A/B/C missing |
+| extra item | `TRAY_MISMATCH` | show A/B/C extra |
+| system reset | `WAIT_BEFORE` | `system_reset.wav` then place-before guidance |
 
-## 5. 운영자 UI 행동
+---
 
-- 활성 경보 확인/전체 확인
-- 해제된 경보 정리
-- 전체 세션 초기화
-- RPi 세션 초기화
-- 상황별 WAV 수동 재생
-- Rider RED/GREEN/OFF
-- 서보 HOME
-- 장치 온라인 상태, 고객 수량, 배달기사 진행률, 트레이 차이, 타임라인 확인
+## 4. Device and transport conditions
 
-## 6. 현재 의도적으로 제한한 범위
+| Device/channel | What can be monitored | Correct interpretation |
+|---|---|---|
+| POS serial | COM open, latest line, boot count | repeated unsolicited BOOT may indicate power instability |
+| Rider serial | COM open and commanded actuator result | port open alone does not prove servo movement |
+| RPi 5562 | periodic `TRAY_COUNT` timestamp | a configurable stale timeout is meaningful |
+| Vision 5555 | listener reachability and latest POS/EXIT transition | **do not use a 4-second stale rule**; final upstream is intentionally one-shot |
+| Vision 5556 | REQ/REP response and timeout | recreate REQ socket after timeout |
+| RPi 5563 | command send result | no application ACK in the current contract |
 
-- Fusion 상태머신이 단일 세션이라 Vision도 최초 활성 고객 한 명을 추적함
-- 고객 여러 명 동시 결제 상관관계는 데이터베이스/주문 ID가 추가되어야 안전하게 확장 가능
-- 웹 UI는 로컬 운영용이며 인증 기능은 없음. 기본 `127.0.0.1`에서만 열림
+Because Vision 5555 does not publish a heartbeat, health monitoring should use a separate heartbeat or service check rather than the absence of customer events.
+
+---
+
+## 5. Operator actions
+
+Current archive exposes:
+
+```text
+status
+rpi
+vision
+order A=1,B=1,C=1
+event REMOVE_CANDIDATE:A
+audio TRAY_MISMATCH
+rpi-reset
+emergency 100
+reset
+quit
+```
+
+The HTTP dashboard exposes current Fusion, Vision, RPi, customer and alert JSON. Authentication and a full production control surface are outside the hackathon scope.
+
+---
+
+## 6. Intentional limits
+
+- Final Fusion demonstration is centered on one active customer/payment correlation at a time.
+- Vision 5555 sends POS/EXIT transitions, not a continuous heartbeat or every PICK frame.
+- RETURN and quantity decrement are not implemented by the final Vision pipeline.
+- RPi HSV classification assumes a fixed camera/tray installation.
+- ZMQ channels have no authentication or encryption.
+- Emergency snapshot display depends on the Vision WebUI having captured that customer's Camera 1 entry image.
