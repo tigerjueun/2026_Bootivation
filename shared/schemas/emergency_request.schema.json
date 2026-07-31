@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tigerjueun/2026_Bootivation/shared/schemas/emergency_request.schema.json",
+  "title": "Bootivation Vision emergency request",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["Emergency", "customer_id"],
+  "properties": {
+    "Emergency": {
+      "const": true
+    },
+    "customer_id": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "timestamp": {
+      "type": "number"
+    }
+  }
+}
