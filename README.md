@@ -176,7 +176,7 @@ Vision 원본은 도율님의 별도 저장소에서 관리합니다.
 |---|---|---|
 | **박시은** | PM·서비스 기획·발표 | 사용자 흐름, 기능 우선순위, 발표·운영 조율 |
 | **박주은** [@tigerjueun](https://github.com/tigerjueun) | Fusion PC, 통신 통합, RPi 트레이·음성, Rider 펌웨어 보정 | 상태머신, POS/Rider/RPi/Vision 연동, ZMQ·Serial |
-| **조혜은** | ATmega128 POS, RPi 트레이·음성 | 기존 ASM 분석, C 모듈화, 센서·LCD·FND·결제 UI, 실물 회로 |
+| **조혜은** [@samareosa](https://github.com/samareosa-cloud) | ATmega128 POS, RPi 트레이·음성 | 기존 ASM 분석, C 모듈화, 센서·LCD·FND·결제 UI, 실물 회로 |
 | **주진호** | Rider Arduino·모바일 프로토타입 | HC-06, 서보 화살표, LED 회로, App Inventor 점검 앱 |
 | **김도율** [@Kuz-DX](https://github.com/Kuz-DX) | Ubuntu ROS 2 Vision·CCTV WebUI | YOLO, 추적, Re-ID, Homography, PICK FSM, ROI 도구, ZMQ 5555/5556 |
 
