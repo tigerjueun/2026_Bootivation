@@ -5,7 +5,7 @@ Bootivation은 짧은 해커톤 기간 동안 기획, 비전, 임베디드 POS, 
 | 팀원 | GitHub | 주요 역할 | 담당 결과물 |
 |---|---|---|---|
 | **박주은** | [@tigerjueun](https://github.com/tigerjueun) | 시스템 아키텍처, Fusion PC, 전체 통신·통합, RPi 트레이·음성, Rider 펌웨어 보정, GitHub 아카이빙 | Python 상태머신, POS/Rider/RPi/Vision 연동, ZMQ·Serial, 미결제·트레이·Rider 검증 로직, 실행 문서 |
-| **혜은** | 추후 연결 | ATmega128 POS | 기존 ASM 동작 분석, C 모듈화, 초음파·IR·터치·조이스틱, LCD/FND UI, POS 실물 회로 |
+| **혜은** | [@samareosa](https://github.com/samareosa-cloud) | ATmega128 POS | 기존 ASM 동작 분석, C 모듈화, 초음파·IR·터치·조이스틱, LCD/FND UI, POS 실물 회로 |
 | **진호** | 추후 연결 | Rider Arduino·모바일 프로토타입 | HC-06, 서보 화살표, 3색 LED, 외부전원·납땜, App Inventor 장치 점검 앱 |
 | **도율** | [@Kuz-DX](https://github.com/Kuz-DX) | Ubuntu ROS 2 Vision·CCTV WebUI | 듀얼 카메라 YOLO, ByteTrack, 전역 고객 ID, Re-ID·Homography, PICK FSM, ROI 도구, ZMQ 고객 상태·Emergency 경보 |
 | **시은** | 추후 연결 | PM·서비스 기획·발표 | 서비스 시나리오, 기능 우선순위, 일정·역할 조율, 발표 구조와 현장 운영 |
